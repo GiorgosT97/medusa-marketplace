@@ -4,7 +4,7 @@ services:
 
   medusa:
     build:
-      context: ./medusa-marketplace-demo
+      context: ./marketplace-app
       dockerfile: Dockerfile
     container_name: ${PROJECT_NAME:-marketplace}-medusa
     depends_on:
@@ -13,11 +13,34 @@ services:
     ports:
       - 9000:9000
     volumes:
-      - ./medusa-marketplace-demo/.env.docker:/application/.env
-    command: sh -c "npx medusa db:setup --db marketplace && yarn dev"
+      - ./marketplace-app/.env.docker:/application/.env
+    environment:
+      - SKIP_MARKETPLACE_HOOKS=1
+    command: sh -c "npx medusa develop"
+    networks:
+      - internal
+
+  postgres:
+    image: postgres:${POSTGRES_VERSION:-15.3-alpine}
+    container_name: ${PROJECT_NAME:-marketplace-db}-postgres
+    environment:
+      POSTGRES_DB: marketplace
+      POSTGRES_USER: marketplace
+      POSTGRES_PASSWORD: super-secure-password
+      PGDATA: '/var/lib/postgresql/data'
+      POSTGRES_INITDB_ARGS: '-E UTF8 --locale=C'
+    command: ['postgres', '-cshared_preload_libraries=pg_stat_statements']
+    ports:
+      - 5432:5432
+    volumes:
+      - marketplace-db-data:/var/lib/postgresql/data
     networks:
       - internal
 
 networks:
   internal:
-    external: true
+    name: ${PROJECT_NAME:-marketplace}
+
+volumes:
+  marketplace-db-data:
+    name: ${POSTGRES_VOLUME_NAME:-marketplace-db-data}
