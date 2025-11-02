@@ -5,8 +5,11 @@ import { Request, Response } from "express"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
 
 export default defineLink(
-  ProductModule.linkable.product,
-  StoreModule.linkable.store
+  {
+    linkable: ProductModule.linkable.product,
+    isList: true,
+  },
+  StoreModule.linkable.store,
 );
 
 export async function getProductStore(req: Request, res: Response) {
