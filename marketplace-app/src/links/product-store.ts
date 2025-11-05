@@ -1,8 +1,9 @@
 import ProductModule from "@medusajs/medusa/product";
 import StoreModule from "@medusajs/medusa/store";
-import { defineLink } from "@medusajs/framework/utils";
+import { defineLink, ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { Request, Response } from "express"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
+import productStoreLink from "../links/product-store";
+import type { MedusaRequest, MedusaResponse } from "@medusajs/framework"
 
 export default defineLink(
   {
@@ -42,3 +43,25 @@ export async function getProductStore(req: Request, res: Response) {
 
   res.json({ store: storeData[0] || null });
 }
+
+/**
+ * GET /store/:storeId/products helper
+ * Returns products linked to a store (with store + variant pricing included)
+ */
+export async function getStoreProducts(req: MedusaRequest, res: MedusaResponse) {
+  const storeId = req.params?.storeId as string | undefined;
+  if (!storeId) {
+    return res.status(400).json({ message: "Missing path param :storeId" });
+  }
+
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
+    const { data: products } = await query.graph({
+      entity: productStoreLink.entryPoint,
+      fields: [
+        "product.*", 
+        "store.name"],
+      filters: { store_id : storeId },
+    });
+
+    res.json({ products });
+  }
