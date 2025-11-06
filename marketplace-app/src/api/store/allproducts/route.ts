@@ -34,6 +34,7 @@ export const GET = async (req: Request, res: Response) => {
       // your custom link: include the store in one shot
       "store.id",
       "store.name",
+      "store.metadata",
       "created_at",
       "variants.*",
       "variants.options.*",

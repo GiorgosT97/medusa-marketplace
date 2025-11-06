@@ -37,7 +37,7 @@ export async function getProductStore(req: Request, res: Response) {
 
   const { data: storeData } = await query.graph({
     entity: "store",
-    fields: ["id", "name"],
+    fields: ["id", "name", "metadata.*"],
     filters: { id: storeId, name: storeName },
   });
 
@@ -49,19 +49,39 @@ export async function getProductStore(req: Request, res: Response) {
  * Returns products linked to a store (with store + variant pricing included)
  */
 export async function getStoreProducts(req: MedusaRequest, res: MedusaResponse) {
-  const storeId = req.params?.storeId as string | undefined;
-  if (!storeId) {
-    return res.status(400).json({ message: "Missing path param :storeId" });
-  }
+  const storeId = req.params?.storeId as string
+  if (!storeId) return res.status(400).json({ message: "Missing :storeId" })
 
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
-    const { data: products } = await query.graph({
-      entity: productStoreLink.entryPoint,
-      fields: [
-        "product.*", 
-        "store.name"],
-      filters: { store_id : storeId },
-    });
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-    res.json({ products });
-  }
+  const take = Math.min(Number(req.query.limit ?? 24), 100)
+  const skip = Number(req.query.offset ?? 0)
+
+  const { data, metadata } = await query.graph({
+    // IMPORTANT: use the link's entry point and fetch nested product fields
+    entity: productStoreLink.entryPoint,
+    fields: [
+      "product.id",
+      "product.title",
+      "product.handle",
+      "product.thumbnail",
+      "product.variants.id",
+      "product.variants.prices.amount",
+      "product.variants.prices.currency_code",
+      // "store.id",
+      // "store.name",
+      "store.*",
+      "store.metadata.*",
+    ],
+    filters: { store_id: storeId },
+    pagination: { take, skip },
+  })
+
+  // data is an array of link rows: { product: {...}, store: {...}, product_id, store_id }
+  return res.json({
+    products: data,
+    count: metadata?.count ?? data.length,
+    limit: take,
+    offset: skip,
+  })
+}

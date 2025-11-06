@@ -18,6 +18,7 @@ export const getProductPriceListPricesStep = createStep(
       filters: {
         metadata: {
           is_super_admin: true,
+          logo_url: true
         },
       },
     });

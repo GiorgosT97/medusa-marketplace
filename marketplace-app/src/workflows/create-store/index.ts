@@ -22,7 +22,7 @@ export const createStoreWorkflow = createWorkflow("create-store", (input: Create
       name: data.input.store_name,
       supported_currencies: [{ currency_code: "usd", is_default: true }],
       default_sales_channel_id: data.salesChannel.id,
-      metadata: data.input.is_super_admin ? { ...data.input.metadata, is_super_admin: true } : data.input.metadata,
+      metadata: data.input.is_super_admin ? { ...data.input.metadata, is_super_admin: true, } : data.input.metadata,
     },
   ]);
 

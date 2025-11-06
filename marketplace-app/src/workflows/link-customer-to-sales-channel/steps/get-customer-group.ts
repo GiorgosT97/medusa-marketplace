@@ -12,6 +12,7 @@ export const getCustomerGroupStep = createStep<string, string, void>(
       filters: {
         metadata: {
           is_super_admin: true,
+          logo_url: true
         },
       },
     });
