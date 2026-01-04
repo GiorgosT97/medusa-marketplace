@@ -46,10 +46,4 @@ module.exports = defineConfig({
       },
     },
   ],
-  plugins: [
-    {
-      resolve: "@techlabi/medusa-marketplace-plugin",
-      options: {},
-    },
-  ],
 })
