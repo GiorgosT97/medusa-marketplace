@@ -12,7 +12,7 @@ COPY package*.json ./
 RUN npm ci
 
 # Global CLI + global ts-node/typescript (so the global CLI can require them)
-RUN npm i -g @medusajs/cli@2.10.3 ts-node typescript
+RUN npm i -g @medusajs/cli@2.11.1 ts-node typescript
 
 COPY . .
 
@@ -23,9 +23,27 @@ RUN medusa build
 WORKDIR /app/.medusa/server
 RUN npm install --omit=dev
 
+# Create entrypoint script
+RUN echo '#!/bin/sh' > /entrypoint.sh && \
+    echo 'set -e' >> /entrypoint.sh && \
+    echo '' >> /entrypoint.sh && \
+    echo '# Copy .env if needed' >> /entrypoint.sh && \
+    echo 'if [ ! -f .env.production ] && [ -f /app/.env ]; then' >> /entrypoint.sh && \
+    echo '  cp /app/.env .env.production' >> /entrypoint.sh && \
+    echo 'fi' >> /entrypoint.sh && \
+    echo '' >> /entrypoint.sh && \
+    echo 'export NODE_ENV=production' >> /entrypoint.sh && \
+    echo '' >> /entrypoint.sh && \
+    echo '# Run migrations before starting' >> /entrypoint.sh && \
+    echo 'echo "Running database migrations..."' >> /entrypoint.sh && \
+    echo 'npx medusa db:migrate || echo "Migration failed or already up to date"' >> /entrypoint.sh && \
+    echo '' >> /entrypoint.sh && \
+    echo '# Start the server' >> /entrypoint.sh && \
+    echo 'echo "Starting Medusa server..."' >> /entrypoint.sh && \
+    echo 'exec npm run start' >> /entrypoint.sh && \
+    chmod +x /entrypoint.sh
+
 VOLUME ["/app/.medusa/server/static"]
 EXPOSE 9000
 
-# Copy .env -> .env.production only if .env.production doesn't already exist
-# (so it won't fight your compose bind-mount)
-CMD ["sh", "-c", "if [ ! -f .env.production ] && [ -f /app/.env ]; then cp /app/.env .env.production; fi; export NODE_ENV=production; npm run start"]
+ENTRYPOINT ["/entrypoint.sh"]

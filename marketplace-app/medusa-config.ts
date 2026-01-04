@@ -1,9 +1,11 @@
-import { loadEnv, defineConfig } from '@medusajs/framework/utils'
+import { loadEnv, defineConfig, Modules } from '@medusajs/framework/utils'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
 module.exports = defineConfig({
   admin: {
+    // This tells the admin dashboard where to send API requests
+    backendUrl: process.env.MEDUSA_BACKEND_URL || "http://localhost:9000",
     vite: () => {
       return {
         optimizeDeps: {
@@ -14,7 +16,6 @@ module.exports = defineConfig({
   },
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
-    // This is only for running prod mode locally.
     cookieOptions: {
       sameSite: "lax",
       secure: false,
@@ -27,4 +28,28 @@ module.exports = defineConfig({
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     }
   },
+  modules: [
+    // THIS IS THE KEY FIX FOR IMAGE URLs
+    {
+      resolve: "@medusajs/medusa/file",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/file-local",
+            id: "local",
+            options: {
+              // This generates correct URLs for uploaded images
+              backend_url: process.env.MEDUSA_BACKEND_URL || "http://localhost:9000",
+            },
+          },
+        ],
+      },
+    },
+  ],
+  plugins: [
+    {
+      resolve: "@techlabi/medusa-marketplace-plugin",
+      options: {},
+    },
+  ],
 })

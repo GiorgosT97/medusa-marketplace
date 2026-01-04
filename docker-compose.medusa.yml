@@ -1,30 +1,36 @@
-version: '3'
+version: '3.8'
 
 services:
   medusa:
-    build:
-      context: ./marketplace-app
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./marketplace-app
+    #   dockerfile: Dockerfile
+    image: bitleaf/thrift-backend:latest
     container_name: marketplace-medusa
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     ports:
       - "9000:9000"
     environment:
       NODE_ENV: production
-      # local only
-      # LOCAL_INSECURE_AUTH: "true"
+      # IMPORTANT: This is the public URL where your API is accessible
+      # This is used to generate correct URLs for uploaded images
+      MEDUSA_BACKEND_URL: "https://api.vintagevault.gr"
       STORE_CORS: "https://store.vintagevault.gr"
       ADMIN_CORS: "https://api.vintagevault.gr"
       AUTH_CORS: "https://api.vintagevault.gr"
       DATABASE_URL: "postgresql://marketplace:super-secure-password@postgres:5432/marketplace"
-      JWT_SECRET: "supersecret"
-      COOKIE_SECRET: "supersecret"
+      JWT_SECRET: "${JWT_SECRET:-supersecret}"
+      COOKIE_SECRET: "${COOKIE_SECRET:-supersecret}"
     volumes:
+      # Persist uploaded files
       - medusa-static:/app/.medusa/server/static
+      # Environment file
       - ./marketplace-app/.env.docker:/app/.medusa/server/.env.production:ro
     networks:
       - internal
+    restart: unless-stopped
 
   postgres:
     image: postgres:${POSTGRES_VERSION:-15.3-alpine}
@@ -35,13 +41,19 @@ services:
       POSTGRES_PASSWORD: super-secure-password
       PGDATA: '/var/lib/postgresql/data'
       POSTGRES_INITDB_ARGS: '-E UTF8 --locale=C'
-    command: ['postgres', '-cshared_preload_libraries=pg_stat_statements']
+    command: ['postgres', '-c', 'shared_preload_libraries=pg_stat_statements']
     ports:
-      - 5432:5432
+      - "5432:5432"
     volumes:
       - marketplace-db-data:/var/lib/postgresql/data
     networks:
       - internal
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marketplace -d marketplace"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 networks:
   internal:
