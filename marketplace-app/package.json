@@ -1,28 +1,13 @@
 {
   "name": "medusa-starter-default",
-  "version": "0.0.1",
-  "description": "A starter for Medusa projects.",
-  "author": "Medusa (https://medusajs.com)",
-  "license": "MIT",
-  "keywords": [
-    "sqlite",
-    "postgres",
-    "typescript",
-    "ecommerce",
-    "headless",
-    "medusa"
+  "version": "0.46.0",
+  "description": "A multi-vendor Medusa plugin",
+  "author": "TechLabi",
+  "license": "Apache 2.0",
+  "files": [
+    ".medusa/server",
+    "CHANGELOG.md"
   ],
-  
-  "scripts": {
-    "build": "medusa build",
-    "seed": "cross-env SKIP_MARKETPLACE_HOOKS=1 medusa exec ./src/scripts/seed.ts",
-    "setup-db": "npx medusa db:setup --db marketplace",
-    "start": "medusa start",
-    "dev": "medusa develop",
-    "test:integration:http": "TEST_TYPE=integration:http NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
-    "test:integration:modules": "TEST_TYPE=integration:modules NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit",
-    "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit"
-  },
   "exports": {
     "./package.json": "./package.json",
     "./workflows": "./.medusa/server/src/workflows/index.js",
@@ -36,64 +21,53 @@
       "default": "./.medusa/server/src/admin/index.js"
     }
   },
-  "dependencies": {
-    "@medusajs/admin-sdk": "2.10.3",
-    "@medusajs/cli": "2.10.3",
-    "@medusajs/framework": "2.10.3",
-    "@medusajs/medusa": "2.10.3",
-    "@mikro-orm/core": "6.4.3",
-    "@mikro-orm/knex": "6.4.3",
-    "@mikro-orm/migrations": "6.4.3",
-    "@mikro-orm/postgresql": "6.4.3",
-    "awilix": "^8.0.1",
-    "pg": "^8.13.0",
-    "@medusajs/test-utils": "^2.10.2",
-    "@medusajs/ui": "^4.0.4",
-    "@mikro-orm/cli": "6.4.3",
-    "@swc/core": "1.5.7",
-    "@types/node": "^20.0.0",
-    "@types/react": "^18.3.2",
-    "@types/react-dom": "^18.2.25",
-    "prop-types": "^15.8.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.6.2",
-    "vite": "^5.2.11",
-    "yalc": "^1.0.0-pre.53",
-    "@medusajs/icons": "^2.10.2",
-    "@medusajs/js-sdk": "^2.10.2",
-    "@medusajs/types": "^2.10.2"
+  "keywords": [
+    "medusa",
+    "medusa-v2",
+    "medusa-plugin-integration",
+    "medusa-plugin-other"
+  ],
+  "scripts": {
+    "build": "medusa build",
+    "dev": "medusa develop",
+    "migrate": "medusa db:migrate",
+    "seed": "cross-env SKIP_MARKETPLACE_HOOKS=1 medusa exec ./src/scripts/seed.ts",
+    "prepublishOnly": "medusa plugin:build",
+    "start": "medusa start"
   },
   "devDependencies": {
-    "@medusajs/test-utils": "2.10.3",
-    "@mikro-orm/cli": "6.4.3",
-    "@swc/core": "1.5.7",
-    "@swc/jest": "^0.2.36",
-    "@types/jest": "^29.5.13",
+    "@medusajs/admin-sdk": "^2.11.1",
+    "@medusajs/cli": "^2.11.1",
+    "@medusajs/framework": "^2.11.1",
+    "@medusajs/medusa": "^2.11.1",
+    "@medusajs/test-utils": "^2.11.1",
+    "@medusajs/ui": "^4.0.4",
+    "@swc/core": "1.15.1",
     "@types/node": "^20.0.0",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.2.25",
-    "jest": "^29.7.0",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2",
     "vite": "^5.2.11",
-    "@medusajs/admin-sdk": "^2.10.2",
-    "@medusajs/cli": "^2.10.2",
-    "@medusajs/framework": "^2.10.2",
-    "@medusajs/medusa": "^2.10.2",
-    "@mikro-orm/core": "6.4.3",
-    "@mikro-orm/knex": "6.4.3",
-    "@mikro-orm/migrations": "6.4.3",
-    "@mikro-orm/postgresql": "6.4.3",
-    "awilix": "^8.0.1",
-    "pg": "^8.13.0"
+    "yalc": "^1.0.0-pre.53"
+  },
+  "peerDependencies": {
+    "@medusajs/admin-sdk": "^2.11.1",
+    "@medusajs/cli": "^2.11.1",
+    "@medusajs/framework": "^2.11.1",
+    "@medusajs/medusa": "^2.11.1",
+    "@medusajs/test-utils": "^2.11.1"
   },
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "@medusajs/icons": "^2.11.1",
+    "@medusajs/js-sdk": "^2.11.1",
+    "@medusajs/types": "^2.11.1"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.39.0"

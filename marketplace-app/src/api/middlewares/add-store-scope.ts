@@ -4,7 +4,7 @@ import { UserDTO } from "@medusajs/framework/types";
 import { container } from "@medusajs/framework"
 
 import * as cookie from "cookie";
-import { asValue } from "awilix";
+import { asValue } from "@medusajs/framework/awilix";
 
 export async function addStoreScope(req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
   const cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : {};
@@ -41,11 +41,10 @@ export async function addStoreScope(req: MedusaRequest, res: MedusaResponse, nex
       entity: "store",
       fields: ["id", "name"],
       filters: {
-        metadata: [
+        metadata: 
           {
             is_super_admin: true,
           },
-        ],
       },
     });
     req.scope.register({

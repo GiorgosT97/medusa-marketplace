@@ -14,6 +14,11 @@ module.exports = defineConfig({
   },
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
+    // This is only for running prod mode locally.
+    cookieOptions: {
+      sameSite: "lax",
+      secure: false,
+    },
     http: {
       storeCors: process.env.STORE_CORS!,
       adminCors: process.env.ADMIN_CORS!,

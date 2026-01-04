@@ -1,22 +1,28 @@
 version: '3'
 
 services:
-
   medusa:
     build:
       context: ./marketplace-app
       dockerfile: Dockerfile
-    container_name: ${PROJECT_NAME:-marketplace}-medusa
+    container_name: marketplace-medusa
     depends_on:
       - postgres
-    restart: always
     ports:
-      - 9000:9000
-    volumes:
-      - ./marketplace-app/.env.docker:/application/.env
+      - "9000:9000"
     environment:
-      - SKIP_MARKETPLACE_HOOKS=1
-    command: sh -c "npx medusa develop"
+      NODE_ENV: production
+      # local only
+      # LOCAL_INSECURE_AUTH: "true"
+      STORE_CORS: "https://store.vintagevault.gr"
+      ADMIN_CORS: "https://api.vintagevault.gr"
+      AUTH_CORS: "https://api.vintagevault.gr"
+      DATABASE_URL: "postgresql://marketplace:super-secure-password@postgres:5432/marketplace"
+      JWT_SECRET: "supersecret"
+      COOKIE_SECRET: "supersecret"
+    volumes:
+      - medusa-static:/app/.medusa/server/static
+      - ./marketplace-app/.env.docker:/app/.medusa/server/.env.production:ro
     networks:
       - internal
 
@@ -44,3 +50,5 @@ networks:
 volumes:
   marketplace-db-data:
     name: ${POSTGRES_VOLUME_NAME:-marketplace-db-data}
+  medusa-static:
+    name: ${PROJECT_NAME:-marketplace}-static
