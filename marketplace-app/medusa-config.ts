@@ -2,10 +2,12 @@ import { loadEnv, defineConfig, Modules } from '@medusajs/framework/utils'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
+const BACKEND_URL = process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+
 module.exports = defineConfig({
   admin: {
     // This tells the admin dashboard where to send API requests
-    backendUrl: process.env.MEDUSA_BACKEND_URL || "http://localhost:9000",
+    backendUrl: `${BACKEND_URL}`,
     vite: () => {
       return {
         optimizeDeps: {
@@ -39,7 +41,8 @@ module.exports = defineConfig({
             id: "local",
             options: {
               // This generates correct URLs for uploaded images
-              backend_url: process.env.MEDUSA_BACKEND_URL || "http://localhost:9000",
+              upload_dir: "static",
+              backend_url: `${BACKEND_URL}/static`,
             },
           },
         ],

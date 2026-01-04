@@ -15,6 +15,10 @@ RUN npm ci
 RUN npm i -g @medusajs/cli@2.11.1 ts-node typescript
 
 COPY . .
+ARG MEDUSA_BACKEND_URL
+ARG VITE_BACKEND_URL
+ENV MEDUSA_BACKEND_URL=${MEDUSA_BACKEND_URL}
+ENV VITE_BACKEND_URL=${VITE_BACKEND_URL}
 
 # Build -> creates .medusa/server
 RUN medusa build
