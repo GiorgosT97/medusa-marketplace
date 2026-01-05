@@ -110,6 +110,7 @@ jobs:
         with:
           context: ./${{ env.WORKING_DIR }}
           file: ./${{ env.WORKING_DIR }}/Dockerfile
+          platforms: linux/amd64
           push: true
           build-args: |
             MEDUSA_BACKEND_URL=${{ vars.MEDUSA_BACKEND_URL }}
