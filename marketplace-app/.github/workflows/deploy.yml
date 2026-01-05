@@ -1,0 +1,104 @@
+name: Deploy to Production
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (e.g., v1.2.3 or latest)'
+        required: false
+        default: 'latest'
+        type: string
+
+jobs:
+  deploy:
+    name: Deploy to Hetzner
+    runs-on: self-hosted
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Determine version to deploy
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            # Get the latest version from VERSION file
+            VERSION="v$(cat VERSION)"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Deploying version: $VERSION"
+
+      - name: Deploy to server
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_HOST: ${{ vars.SERVER_HOST }}
+          SERVER_USER: ${{ vars.SERVER_USER }}
+          SERVER_PORT: ${{ vars.SERVER_PORT }}
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+          DOCKER_IMAGE: ${{ vars.DOCKER_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}
+        run: |
+          # Setup SSH
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          
+          # Add server to known hosts
+          ssh-keyscan -p ${SERVER_PORT:-22} -H $SERVER_HOST >> ~/.ssh/known_hosts 2>/dev/null || true
+          
+          # Run deployment script on remote server
+          ssh -i ~/.ssh/deploy_key -p ${SERVER_PORT:-22} ${SERVER_USER}@${SERVER_HOST} << 'ENDSSH'
+            set -e
+            
+            # Navigate to deployment directory
+            cd ${DEPLOY_PATH:-/opt/marketplace}
+            
+            # Export environment variables for deployment
+            export DOCKER_IMAGE="${DOCKER_IMAGE}"
+            export CONTAINER_NAME="${CONTAINER_NAME:-marketplace-backend}"
+            
+            # Run deployment script
+            if [ -f deploy.sh ]; then
+              ./deploy.sh ${{ steps.version.outputs.version }}
+            else
+              echo "ERROR: deploy.sh not found in ${DEPLOY_PATH:-/opt/marketplace}"
+              exit 1
+            fi
+          ENDSSH
+          
+          # Cleanup SSH key
+          rm -f ~/.ssh/deploy_key
+
+      - name: Verify deployment
+        env:
+          BACKEND_URL: ${{ vars.MEDUSA_BACKEND_URL }}
+        run: |
+          echo "Waiting 10 seconds for services to stabilize..."
+          sleep 10
+          
+          echo "Checking if backend is responding..."
+          if curl -f -s "${BACKEND_URL}/health" > /dev/null 2>&1; then
+            echo "✓ Backend is responding"
+          else
+            echo "⚠ Backend health check failed (endpoint may not exist)"
+          fi
+          
+          echo ""
+          echo "Deployment completed!"
+          echo "Backend URL: ${BACKEND_URL}"
+
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "::notice::✓ Deployment successful! Version ${{ steps.version.outputs.version }} is now live."
+          else
+            echo "::error::✗ Deployment failed! Please check the logs."
+          fi

@@ -31,7 +31,7 @@ module.exports = defineConfig({
     }
   },
   modules: [
-    // THIS IS THE KEY FIX FOR IMAGE URLs
+    // File storage configuration for images/uploads
     {
       resolve: "@medusajs/medusa/file",
       options: {
@@ -40,8 +40,12 @@ module.exports = defineConfig({
             resolve: "@medusajs/medusa/file-local",
             id: "local",
             options: {
-              // This generates correct URLs for uploaded images
-              upload_dir: "static",
+              // Use absolute path in production to match Docker workdir
+              // In dev, use relative path from project root
+              upload_dir: process.env.NODE_ENV === "production" 
+                ? "/app/.medusa/server/static" 
+                : "static",
+              // This generates the correct URLs for uploaded images
               backend_url: `${BACKEND_URL}/static`,
             },
           },

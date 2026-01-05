@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  backend:
+    image: ${DOCKER_IMAGE:-docker.io/yourusername/marketplace-backend}:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-marketplace-backend}
+    restart: unless-stopped
+    
+    ports:
+      - "${BACKEND_PORT:-9000}:9000"
+    
+    environment:
+      # Database
+      - DATABASE_URL=${DATABASE_URL}
+      
+      # Backend URLs
+      - MEDUSA_BACKEND_URL=${MEDUSA_BACKEND_URL}
+      - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+      
+      # CORS
+      - STORE_CORS=${STORE_CORS}
+      - ADMIN_CORS=${ADMIN_CORS}
+      - AUTH_CORS=${AUTH_CORS}
+      
+      # Secrets
+      - JWT_SECRET=${JWT_SECRET}
+      - COOKIE_SECRET=${COOKIE_SECRET}
+      
+      # Optional features
+      - IS_CHANNEL_PRICING_ENABLED=${IS_CHANNEL_PRICING_ENABLED:-false}
+      
+      # Node environment
+      - NODE_ENV=production
+    
+    volumes:
+      # Persist uploaded static files
+      - static-files:/app/.medusa/server/static
+      # Optional: Mount .env file if needed
+      # - ./.env:/app/.env:ro
+    
+    networks:
+      - marketplace-network
+    
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  static-files:
+    driver: local
+
+networks:
+  marketplace-network:
+    driver: bridge
