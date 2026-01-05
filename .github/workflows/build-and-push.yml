@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'marketplace-app/**'
+      - '.github/workflows/build-and-push.yml'
   workflow_dispatch:
     inputs:
       version:
@@ -14,6 +17,7 @@ on:
 env:
   DOCKER_REGISTRY: docker.io
   DOCKER_IMAGE: ${{ vars.DOCKER_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}
+  WORKING_DIR: marketplace-app
 
 jobs:
   version:
@@ -31,6 +35,8 @@ jobs:
       - name: Calculate version
         id: version
         run: |
+          cd ${{ env.WORKING_DIR }}
+          
           # Check if manual version override is provided
           if [ -n "${{ github.event.inputs.version }}" ]; then
             VERSION="${{ github.event.inputs.version }}"
@@ -69,6 +75,7 @@ jobs:
       - name: Commit version bump
         if: github.event.inputs.version == ''
         run: |
+          cd ${{ env.WORKING_DIR }}
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add VERSION
@@ -101,8 +108,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./${{ env.WORKING_DIR }}
+          file: ./${{ env.WORKING_DIR }}/Dockerfile
           push: true
           build-args: |
             MEDUSA_BACKEND_URL=${{ vars.MEDUSA_BACKEND_URL }}

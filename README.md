@@ -69,6 +69,81 @@ Option 2: Using the combined `docker-compose.yml` and `docker-compose.medusa.yml
 docker compose -f docker-compose.yml -f docker-compose.medusa.yml down -v
 ```
 
+## 🚀 CI/CD Pipeline & Deployment
+
+This repository includes a complete CI/CD pipeline for automated deployment to production.
+
+### Quick Links
+
+- 📖 [Quick Start Guide](./marketplace-app/QUICKSTART.md) - Get deployed in 30 minutes
+- 📚 [Full Deployment Guide](./marketplace-app/DEPLOYMENT.md) - Comprehensive documentation
+- 🧪 [Testing Guide](./marketplace-app/TESTING.md) - Test procedures
+- 📋 [Quick Reference](./marketplace-app/QUICK_REFERENCE.md) - Command cheat sheet
+- 📝 [Changes Summary](./marketplace-app/CHANGES_SUMMARY.md) - What's new
+
+### Features
+
+- ✅ **Auto Thumbnails**: Product thumbnails automatically set from first image
+- ✅ **CI/CD Pipeline**: Automated build, push, and deployment
+- ✅ **Semantic Versioning**: Auto-increment or manual version control
+- ✅ **One-Push Deploy**: Push to main → automatic deployment
+- ✅ **Easy Rollback**: Deploy any previous version instantly
+- ✅ **Docker Optimized**: Persistent storage for uploaded images
+
+### GitHub Actions Workflows
+
+Located in `.github/workflows/`:
+
+1. **build-and-push.yml** - Builds Docker image and pushes to Docker Hub
+   - Triggers on push to main (when marketplace-app changes)
+   - Auto-increments version (1.0.0 → 1.0.1)
+   - Creates GitHub releases
+   
+2. **deploy.yml** - Deploys to production server
+   - Triggers after successful build
+   - Can deploy specific versions manually
+   - Includes health checks
+
+### Project Structure
+
+```
+medusa-marketplace/
+├── .github/
+│   └── workflows/           # CI/CD pipelines (repo root)
+│       ├── build-and-push.yml
+│       └── deploy.yml
+├── marketplace-app/         # Main Medusa application
+│   ├── src/
+│   │   ├── workflows/hooks/
+│   │   │   └── product-created.ts    # Auto-thumbnail logic
+│   │   └── scripts/
+│   │       └── fix-thumbnails.ts     # Fix existing products
+│   ├── VERSION              # Semantic version tracking
+│   ├── Dockerfile           # Production Docker image
+│   ├── deploy.sh            # Server deployment script
+│   ├── docker-compose.production.yml
+│   ├── QUICKSTART.md        # 30-min setup guide
+│   ├── DEPLOYMENT.md        # Full documentation
+│   ├── TESTING.md           # Test procedures
+│   └── QUICK_REFERENCE.md   # Command reference
+└── docker-compose.yml       # Local development
+```
+
+### Getting Started with CI/CD
+
+1. **Read the Quick Start**: Follow [QUICKSTART.md](./marketplace-app/QUICKSTART.md)
+2. **Configure GitHub**: Add secrets and variables (see guide)
+3. **Setup Server**: Prepare your deployment server
+4. **Push to Main**: Everything deploys automatically!
+
+### Version Management
+
+Current version: See [marketplace-app/VERSION](./marketplace-app/VERSION)
+
+- **Auto-increment**: Every push bumps patch version
+- **Manual override**: Use workflow dispatch to set custom version
+- **Tags**: Each version gets Git tag and Docker tag
+
 ## License
 
 MIT

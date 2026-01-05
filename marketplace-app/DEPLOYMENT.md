@@ -295,9 +295,22 @@ cat VERSION
 
 ## CI/CD Pipeline
 
+### Repository Structure
+
+```
+medusa-marketplace/              # Repository root
+├── .github/workflows/           # CI/CD workflows (repo root level)
+│   ├── build-and-push.yml      # Build and push to Docker Hub
+│   └── deploy.yml              # Deploy to production
+└── marketplace-app/            # Medusa application
+    ├── VERSION                 # Version tracking
+    ├── Dockerfile              # Image build config
+    └── ...                     # Application code
+```
+
 ### How It Works
 
-The CI/CD pipeline consists of two workflows:
+The CI/CD pipeline consists of two workflows located at **`.github/workflows/`** (repository root):
 
 #### 1. Build and Push (`build-and-push.yml`)
 

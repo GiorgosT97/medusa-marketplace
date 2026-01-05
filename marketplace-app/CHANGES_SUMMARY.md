@@ -68,7 +68,7 @@ npx medusa exec ./src/scripts/fix-thumbnails.ts
 - Creates GitHub releases
 
 **Files Created:**
-- `.github/workflows/build-and-push.yml` - Build automation
+- `../.github/workflows/build-and-push.yml` - Build automation (at repo root)
 - `VERSION` - Version tracking file (starts at 1.0.0)
 
 **Features:**
@@ -87,7 +87,7 @@ npx medusa exec ./src/scripts/fix-thumbnails.ts
 - Includes health checks and rollback capability
 
 **Files Created:**
-- `.github/workflows/deploy.yml` - Deployment automation
+- `../.github/workflows/deploy.yml` - Deployment automation (at repo root)
 - `deploy.sh` - Server-side deployment script
 - `docker-compose.production.yml` - Production compose file
 
@@ -103,26 +103,31 @@ npx medusa exec ./src/scripts/fix-thumbnails.ts
 ## 📁 New Files Created
 
 ```
-marketplace-app/
+medusa-marketplace/                 # Repository root
 ├── .github/
-│   └── workflows/
+│   └── workflows/                  # ⚠️ IMPORTANT: At repo root!
 │       ├── build-and-push.yml      # CI workflow
 │       └── deploy.yml              # CD workflow
-├── src/
-│   ├── workflows/hooks/
-│   │   └── product-created.ts      # Modified: auto-thumbnail
-│   └── scripts/
-│       └── fix-thumbnails.ts       # New: fix existing products
-├── VERSION                         # New: version tracking
-├── deploy.sh                       # New: server deployment script
-├── docker-compose.production.yml   # New: production compose
-├── Dockerfile                      # Modified: fixed paths
-├── medusa-config.ts               # Modified: env-aware paths
-├── DEPLOYMENT.md                  # New: detailed deployment guide
-├── QUICKSTART.md                  # New: 30-min setup guide
-├── TESTING.md                     # New: comprehensive tests
-└── CHANGES_SUMMARY.md            # This file
+└── marketplace-app/
+    ├── src/
+    │   ├── workflows/hooks/
+    │   │   └── product-created.ts      # Modified: auto-thumbnail
+    │   └── scripts/
+    │       └── fix-thumbnails.ts       # New: fix existing products
+    ├── VERSION                         # New: version tracking
+    ├── deploy.sh                       # New: server deployment script
+    ├── docker-compose.production.yml   # New: production compose
+    ├── Dockerfile                      # Modified: fixed paths
+    ├── medusa-config.ts               # Modified: env-aware paths
+    ├── DEPLOYMENT.md                  # New: detailed deployment guide
+    ├── QUICKSTART.md                  # New: 30-min setup guide
+    ├── TESTING.md                     # New: comprehensive tests
+    ├── SETUP_CHECKLIST.md            # New: setup verification
+    ├── QUICK_REFERENCE.md            # New: command reference
+    └── CHANGES_SUMMARY.md            # This file
 ```
+
+**Note:** GitHub Actions workflows must be at repository root (`.github/workflows/`), not inside `marketplace-app/`.
 
 ---
 
