@@ -18,7 +18,6 @@ export const getProductPriceListPricesStep = createStep(
       filters: {
         metadata: {
           is_super_admin: true,
-          logo_url: true
         },
       },
     });
@@ -31,8 +30,9 @@ export const getProductPriceListPricesStep = createStep(
       },
     });
 
-    const priceListIds: string[] = allPriceLists
-      .map(({ price_list }) => price_list.id);
+    const priceListIds: string[] = allPriceLists.map(
+      ({ price_list }) => price_list.id
+    );
     const createInput = priceListIds.map((id) => ({ id, prices }));
 
     return new StepResponse(createInput);
