@@ -1,8 +1,8 @@
-import { loadEnv, defineConfig, Modules } from "@medusajs/framework/utils";
+import { loadEnv, defineConfig, Modules } from '@medusajs/framework/utils'
 
-loadEnv(process.env.NODE_ENV || "development", process.cwd());
+loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
-const BACKEND_URL = process.env.MEDUSA_BACKEND_URL || "http://localhost:9000";
+const BACKEND_URL = process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
 
 module.exports = defineConfig({
   admin: {
@@ -28,7 +28,7 @@ module.exports = defineConfig({
       authCors: process.env.AUTH_CORS!,
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
-    },
+    }
   },
   modules: [
     // File storage configuration for images/uploads
@@ -42,10 +42,9 @@ module.exports = defineConfig({
             options: {
               // Use absolute path in production to match Docker workdir
               // In dev, use relative path from project root
-              upload_dir:
-                process.env.NODE_ENV === "production"
-                  ? "/app/.medusa/server/static"
-                  : "static",
+              upload_dir: process.env.NODE_ENV === "production" 
+                ? "/app/.medusa/server/static" 
+                : "static",
               // This generates the correct URLs for uploaded images
               backend_url: `${BACKEND_URL}/static`,
             },
@@ -53,20 +52,5 @@ module.exports = defineConfig({
         ],
       },
     },
-    // Tax provider configuration
-    {
-      resolve: "@medusajs/medusa/tax",
-      options: {
-        providers: [
-          {
-            resolve: "@medusajs/medusa/tax-system",
-            id: "system",
-            options: {
-              // System tax provider - uses region tax settings
-            },
-          },
-        ],
-      },
-    },
   ],
-});
+})
