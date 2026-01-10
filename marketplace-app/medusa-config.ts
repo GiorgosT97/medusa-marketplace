@@ -1,4 +1,5 @@
 import { loadEnv, defineConfig, Modules } from '@medusajs/framework/utils'
+import { BRAND_MODULE } from './src/modules/brand'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
@@ -31,6 +32,11 @@ module.exports = defineConfig({
     }
   },
   modules: [
+    // Brand module for product brands
+    {
+      resolve: "./src/modules/brand",
+      options: {},
+    },
     // File storage configuration for images/uploads
     {
       resolve: "@medusajs/medusa/file",
@@ -42,8 +48,8 @@ module.exports = defineConfig({
             options: {
               // Use absolute path in production to match Docker workdir
               // In dev, use relative path from project root
-              upload_dir: process.env.NODE_ENV === "production" 
-                ? "/app/.medusa/server/static" 
+              upload_dir: process.env.NODE_ENV === "production"
+                ? "/app/.medusa/server/static"
                 : "static",
               // This generates the correct URLs for uploaded images
               backend_url: `${BACKEND_URL}/static`,
