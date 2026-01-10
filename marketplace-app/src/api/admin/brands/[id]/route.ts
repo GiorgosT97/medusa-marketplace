@@ -40,7 +40,10 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   if (description !== undefined) updateData.description = description
 
   try {
-    const brand = await brandService.updateBrands(id, updateData)
+    const brand = await brandService.updateBrands({
+      selector: { id },
+      data: updateData,
+    })
     res.json({ brand })
   } catch (error: any) {
     if (error.message?.includes("not found")) {
