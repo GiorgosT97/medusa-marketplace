@@ -43,6 +43,7 @@
     "@medusajs/test-utils": "^2.11.1",
     "@medusajs/ui": "^4.0.4",
     "@swc/core": "1.15.1",
+    "@types/multer": "^2.0.0",
     "@types/node": "^20.0.0",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.2.25",
@@ -65,9 +66,11 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@imgly/background-removal-node": "^1.4.5",
     "@medusajs/icons": "^2.11.1",
     "@medusajs/js-sdk": "^2.11.1",
-    "@medusajs/types": "^2.11.1"
+    "@medusajs/types": "^2.11.1",
+    "sharp": "^0.34.5"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.39.0"
