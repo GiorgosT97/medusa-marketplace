@@ -16,6 +16,16 @@ import { linkUserToStoreStep } from "./steps/link-user-to-store";
 import { checkSuperAdminStep } from "./steps/checkSuperAdmin";
 import { checkUnickStoreNameStep } from "./steps/checkUnickStoreName";
 
+export type StoreAddressInput = {
+  address_1: string;
+  address_2?: string;
+  city: string;
+  postal_code: string;
+  province?: string;
+  country_code: string;
+  phone?: string;
+};
+
 export type CreateStoreInput = {
   store_name: string;
   email?: string;
@@ -23,6 +33,7 @@ export type CreateStoreInput = {
   user_id?: string;
   is_super_admin?: boolean;
   metadata?: Record<string, any>;
+  address?: StoreAddressInput;
 };
 
 export const createStoreWorkflow = createWorkflow(
@@ -70,7 +81,7 @@ export const createStoreWorkflow = createWorkflow(
     const storesData = transform({ input, salesChannel }, (data) => [
       {
         name: data.input.store_name,
-        supported_currencies: [{ currency_code: "usd", is_default: true }],
+        supported_currencies: [{ currency_code: "eur", is_default: true }],
         default_sales_channel_id: data.salesChannel.id,
         metadata: data.input.is_super_admin
           ? { ...data.input.metadata, is_super_admin: true }
@@ -98,6 +109,7 @@ export const createStoreWorkflow = createWorkflow(
       storeId: store.id,
       salesChannel,
       userId: user.id,
+      address: input.address,
     });
 
     return new WorkflowResponse(

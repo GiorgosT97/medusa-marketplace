@@ -19,7 +19,7 @@ export const createMultiStoreWorkflow = createWorkflow("create-multi-store", (in
   const storesData = transform({ input, salesChannel }, (data) => [
     {
       name: data.input.store_name,
-      supported_currencies: [{ currency_code: "usd", is_default: true }],
+      supported_currencies: [{ currency_code: "eur", is_default: true }],
       default_sales_channel_id: data.salesChannel.id,
     },
   ]);

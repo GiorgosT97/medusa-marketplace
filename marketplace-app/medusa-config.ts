@@ -1,5 +1,6 @@
 import { loadEnv, defineConfig, Modules } from '@medusajs/framework/utils'
 import { BRAND_MODULE } from './src/modules/brand'
+import { STORE_ADDRESS_MODULE } from './src/modules/store-address'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
@@ -35,6 +36,11 @@ module.exports = defineConfig({
     // Brand module for product brands
     {
       resolve: "./src/modules/brand",
+      options: {},
+    },
+    // Store address module for vendor locations
+    {
+      resolve: "./src/modules/store-address",
       options: {},
     },
     // File storage configuration for images/uploads

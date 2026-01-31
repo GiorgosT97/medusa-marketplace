@@ -16,7 +16,7 @@ export const createUserStep = createStep(
   "create-user-step",
   async (
     input: Required<
-      Omit<CreateStoreInput, "user_id" | "store_name" | "metadata">
+      Omit<CreateStoreInput, "user_id" | "store_name" | "metadata" | "address">
     >,
     { container }
   ) => {
