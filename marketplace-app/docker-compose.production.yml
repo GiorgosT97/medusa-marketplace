@@ -25,7 +25,8 @@ services:
       # Secrets
       - JWT_SECRET=${JWT_SECRET}
       - COOKIE_SECRET=${COOKIE_SECRET}
-      
+      - STORE_REGISTRATION_CODE=${STORE_REGISTRATION_CODE}
+
       # Optional features
       - IS_CHANNEL_PRICING_ENABLED=${IS_CHANNEL_PRICING_ENABLED:-false}
       
