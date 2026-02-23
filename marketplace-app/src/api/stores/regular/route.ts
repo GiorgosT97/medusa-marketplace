@@ -11,10 +11,7 @@ export async function POST(
 ): Promise<void> {
   const expectedCode = process.env.STORE_REGISTRATION_CODE
 
-  // Skip code check if request comes from an authenticated admin session
-  const hasAdminAuth = !!req.headers.authorization
-
-  if (expectedCode && !hasAdminAuth) {
+  if (expectedCode) {
     const provided = (req.body as any).registration_code
     if (!provided || provided !== expectedCode) {
       return res.status(401).json({ message: "Μη έγκυρος κωδικός εγγραφής." }) as any

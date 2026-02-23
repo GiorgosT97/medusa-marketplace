@@ -13,6 +13,7 @@ export default function SignUpForm() {
   const [storeName, setStoreName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [registrationCode, setRegistrationCode] = useState("");
 
   // Address fields
   const [address1, setAddress1] = useState("");
@@ -27,7 +28,7 @@ export default function SignUpForm() {
     e.preventDefault();
 
     // Basic validation
-    if (!storeName || !email || !password) {
+    if (!storeName || !email || !password || !registrationCode) {
       toast.info("Error", {
         description: "Please fill in all required fields.",
       });
@@ -48,6 +49,7 @@ export default function SignUpForm() {
           store_name: storeName,
           email,
           password,
+          registration_code: registrationCode,
           address: {
             address_1: address1,
             address_2: address2 || undefined,
@@ -73,6 +75,7 @@ export default function SignUpForm() {
         setStoreName("");
         setEmail("");
         setPassword("");
+        setRegistrationCode("");
         setAddress1("");
         setAddress2("");
         setCity("");
@@ -132,6 +135,16 @@ export default function SignUpForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="password"
+            />
+          </div>
+          <div>
+            <Label htmlFor="registrationCode">Registration Code *</Label>
+            <Input
+              id="registrationCode"
+              type="password"
+              value={registrationCode}
+              onChange={(e) => setRegistrationCode(e.target.value)}
+              placeholder="Code provided by the platform"
             />
           </div>
         </div>
