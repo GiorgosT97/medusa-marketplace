@@ -34,11 +34,13 @@ export const POST = async (
     )
   }
 
+  const skipBgRemoval = req.query.skipBgRemoval === "true"
+
   // Process each file
   const processedFiles = await Promise.all(
     input.map(async (file) => {
       // Check if this is an image that should have background removed
-      if (isSupportedImageType(file.mimetype)) {
+      if (!skipBgRemoval && isSupportedImageType(file.mimetype)) {
         try {
           console.log(`Processing background removal for: ${file.originalname}`)
 
