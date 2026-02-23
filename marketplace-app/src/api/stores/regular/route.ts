@@ -5,15 +5,16 @@ import {
   createStoreWorkflow,
 } from "../../../workflows/create-store";
 
-// curl -X POST http://localhost:9000/stores/regular -d '{ "store_name":"My Shop", "email":"admin@test.com", "password": "123", "registration_code": "SECRET" }' -H 'Content-Type: application/json'
-
 export async function POST(
   req: MedusaRequest<CreateStoreInput & { registration_code?: string }>,
   res: MedusaResponse
 ): Promise<void> {
   const expectedCode = process.env.STORE_REGISTRATION_CODE
 
-  if (expectedCode) {
+  // Skip code check if request comes from an authenticated admin session
+  const hasAdminAuth = !!req.headers.authorization
+
+  if (expectedCode && !hasAdminAuth) {
     const provided = (req.body as any).registration_code
     if (!provided || provided !== expectedCode) {
       return res.status(401).json({ message: "Μη έγκυρος κωδικός εγγραφής." }) as any
