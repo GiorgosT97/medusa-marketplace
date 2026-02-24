@@ -30,6 +30,7 @@
   "scripts": {
     "prebuild": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/patch-admin.ts",
     "build": "medusa build",
+    "predev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/patch-admin.ts",
     "dev": "medusa develop",
     "migrate": "medusa db:migrate",
     "seed": "cross-env SKIP_MARKETPLACE_HOOKS=1 medusa exec ./src/scripts/seed.ts",

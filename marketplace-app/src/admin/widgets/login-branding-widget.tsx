@@ -4,7 +4,8 @@ const LoginBrandingWidget = () => {
   return (
     <>
     <style>{`
-      body, html { background-color: #F9F3EE !important; }
+      html, html.dark, body { background-color: #F9F3EE !important; color-scheme: light !important; }
+      #root > div { background-color: #F9F3EE !important; }
     `}</style>
     <div
       style={{
