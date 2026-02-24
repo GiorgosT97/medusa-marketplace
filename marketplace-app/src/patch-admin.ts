@@ -115,7 +115,7 @@ const CHUNK_1 = res_1[0];
 if (CHUNK_1) {
   lines = readFileAsLines(CHUNK_1);
   for (let i = 0; i < lines.length; i++) {
-    lines[i] = lines[i].replace(/Welcome to Medusa/g, "");
+    lines[i] = lines[i].replace(/Welcome to (Medusa|Vintage Vault|Marketplace)/g, "");
     lines[i] = lines[i].replace(/Sign in to access the account area/g, "");
   }
   writeFile(lines, CHUNK_1);
