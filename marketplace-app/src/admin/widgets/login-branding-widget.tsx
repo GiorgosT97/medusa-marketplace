@@ -2,6 +2,10 @@ import { defineWidgetConfig } from "@medusajs/admin-sdk"
 
 const LoginBrandingWidget = () => {
   return (
+    <>
+    <style>{`
+      body, html { background-color: #F9F3EE !important; }
+    `}</style>
     <div
       style={{
         backgroundColor: "#F9F3EE",
@@ -43,6 +47,7 @@ const LoginBrandingWidget = () => {
         Vendor Portal
       </p>
     </div>
+    </>
   )
 }
 
