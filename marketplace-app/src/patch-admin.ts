@@ -108,17 +108,41 @@ const REST_PASSWORD_PATHS = findFilesPathByNamePattern(
   ".mjs"
 );
 
-// 1) Welcome to Medusa -> Welcome to Marketplace
-let lines: string[];
-const res_1 = findChunksFileByContainingText("Welcome to Medusa");
-const CHUNK_1 = res_1[0];
-if (CHUNK_1) {
-  lines = readFileAsLines(CHUNK_1);
-  for (let i = 0; i < lines.length; i++) {
-    lines[i] = lines[i].replace(/Welcome to (Medusa|Vintage Vault|Marketplace)/g, "");
-    lines[i] = lines[i].replace(/Sign in to access the account area/g, "");
+// 1a) Patch en.json — the real runtime translation source (idempotent)
+{
+  const enJsonPath = `${process.cwd()}/node_modules/@medusajs/dashboard/dist/en.json`;
+  if (fs.existsSync(enJsonPath)) {
+    const json = JSON.parse(fs.readFileSync(enJsonPath, "utf8"));
+    let changed = false;
+    if (json?.login?.title) { json.login.title = ""; changed = true; }
+    if (json?.login?.hint) { json.login.hint = ""; changed = true; }
+    if (changed) {
+      fs.writeFileSync(enJsonPath, JSON.stringify(json), "utf8");
+      console.log("Patched en.json login.title and login.hint.");
+    }
   }
-  writeFile(lines, CHUNK_1);
+}
+
+// 1b) Also patch chunk files for the bundled translations (idempotent)
+let lines: string[];
+{
+  const dirPath = `${process.cwd()}/node_modules/@medusajs/dashboard/dist`;
+  const allChunkFiles = (fs.readdirSync(dirPath) as string[]).filter(
+    (f: string) => f.startsWith("chunk-") && f.endsWith(".mjs")
+  );
+  for (const fileName of allChunkFiles) {
+    const chunkPath = `${dirPath}/${fileName}`;
+    const content: string = fs.readFileSync(chunkPath, "utf8");
+    if (content.includes("Welcome to") || content.includes("Sign in to access the account area")) {
+      const updated = content
+        .replace(/Welcome to (Medusa|Vintage Vault|Marketplace)/g, "")
+        .replace(/Sign in to access the account area/g, "");
+      if (updated !== content) {
+        fs.writeFileSync(chunkPath, updated, "utf8");
+        console.log(`Removed welcome text in ${chunkPath}`);
+      }
+    }
+  }
 }
 
 // 2) hide avatar logo on login page

@@ -12,7 +12,11 @@ const SignupWidget = () => {
 
   return disableSignupWidget ? null : (
     <div className="flex flex-col">
-      <p className="text-center text-sm mb-2">or</p>
+      <div className="flex items-center gap-x-3 my-2">
+        <div className="flex-1 h-px bg-ui-border-base" />
+        <p className="text-ui-fg-muted txt-compact-small">or</p>
+        <div className="flex-1 h-px bg-ui-border-base" />
+      </div>
       <DrawerComponent title="Sign Up" content={<SignupForm />} />
     </div>
   );
