@@ -28,6 +28,7 @@
     "medusa-plugin-other"
   ],
   "scripts": {
+    "prebuild": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/patch-admin.ts",
     "build": "medusa build",
     "dev": "medusa develop",
     "migrate": "medusa db:migrate",
