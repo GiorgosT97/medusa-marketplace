@@ -69,6 +69,7 @@ export const createStoreWorkflow = createWorkflow(
         email: input.email,
         password: input.password,
         is_super_admin: input.is_super_admin,
+        authIdentityId: input.authIdentityId,
       });
     });
 
