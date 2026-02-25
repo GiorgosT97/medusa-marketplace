@@ -34,7 +34,7 @@ export const POST = async (
     )
   }
 
-  const skipBgRemoval = req.query.skipBgRemoval === "true"
+  const skipBgRemoval = req.headers["x-skip-bg-removal"] === "true"
 
   // Process each file
   const processedFiles = await Promise.all(

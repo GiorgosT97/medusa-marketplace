@@ -7,21 +7,31 @@ const BG = "#F9F3EE"
 
 const LoginBrandingWidget = () => {
   useEffect(() => {
-    // Force light background — overrides Medusa dark theme CSS variables at the JS level
+    // Force light theme — overrides both background AND foreground CSS variables
     const html = document.documentElement
+    // Backgrounds
     html.style.setProperty("--ui-bg-base", BG)
     html.style.setProperty("--ui-bg-subtle", BG)
     html.style.setProperty("--ui-bg-component", BG)
+    html.style.setProperty("--ui-bg-field", "#ffffff")
+    html.style.setProperty("--ui-bg-field-hover", "#f9fafb")
     html.style.backgroundColor = BG
     document.body.style.backgroundColor = BG
+    // Foregrounds (force dark text so inputs are readable)
+    html.style.setProperty("--ui-fg-base", "#111827")
+    html.style.setProperty("--ui-fg-subtle", "#6B7280")
+    html.style.setProperty("--ui-fg-muted", "#9CA3AF")
+    html.style.setProperty("--ui-fg-on-color", "#111827")
 
     const root = document.getElementById("root")
     if (root) root.style.backgroundColor = BG
 
     return () => {
-      html.style.removeProperty("--ui-bg-base")
-      html.style.removeProperty("--ui-bg-subtle")
-      html.style.removeProperty("--ui-bg-component")
+      for (const prop of [
+        "--ui-bg-base", "--ui-bg-subtle", "--ui-bg-component",
+        "--ui-bg-field", "--ui-bg-field-hover",
+        "--ui-fg-base", "--ui-fg-subtle", "--ui-fg-muted", "--ui-fg-on-color",
+      ]) html.style.removeProperty(prop)
       html.style.backgroundColor = ""
       document.body.style.backgroundColor = ""
       if (root) root.style.backgroundColor = ""
@@ -36,6 +46,9 @@ const LoginBrandingWidget = () => {
         #root, #root > div { background-color: ${BG} !important; }
         .bg-ui-bg-base { background-color: ${BG} !important; }
         .bg-ui-bg-subtle { background-color: ${BG} !important; }
+        /* Force dark text on all inputs/textareas on the login page */
+        input, textarea { color: #111827 !important; background-color: #ffffff !important; }
+        input::placeholder, textarea::placeholder { color: #9CA3AF !important; }
       `}</style>
       <div
         style={{

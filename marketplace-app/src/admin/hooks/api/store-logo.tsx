@@ -47,9 +47,10 @@ export const uploadStoreLogo = async (file: File): Promise<string> => {
   const formData = new FormData()
   formData.append("files", file)
 
-  const response = await fetch("/admin/uploads?skipBgRemoval=true", {
+  const response = await fetch("/admin/uploads", {
     method: "POST",
     credentials: "include",
+    headers: { "x-skip-bg-removal": "true" },
     body: formData,
   })
 

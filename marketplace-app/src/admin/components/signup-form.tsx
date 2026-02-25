@@ -3,11 +3,22 @@ import {
   Button,
   Container,
   Heading,
-  Input,
   Label,
   Text,
   toast,
 } from "@medusajs/ui";
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  height: "2.75rem",
+  padding: "0 1rem",
+  borderRadius: "0.375rem",
+  border: "1px solid #D1D5DB",
+  backgroundColor: "#ffffff",
+  color: "#111827",
+  fontSize: "0.875rem",
+  outline: "none",
+};
 
 export default function SignUpForm() {
   const [storeName, setStoreName] = useState("");
@@ -105,121 +116,132 @@ export default function SignUpForm() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Store Info Section */}
         <div className="space-y-4">
-          <Heading level="h3" className="text-sm font-medium text-ui-fg-subtle">
+          <Heading level="h3" className="text-sm font-medium" style={{ color: "#560B18" }}>
             Store Information
           </Heading>
           <div>
             <Label htmlFor="storeName">Store Name *</Label>
-            <Input
+            <input
               id="storeName"
               value={storeName}
               onChange={(e) => setStoreName(e.target.value)}
               placeholder="My store"
+              style={inputStyle}
             />
           </div>
           <div>
             <Label htmlFor="email">Email *</Label>
-            <Input
+            <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="user@mail.com"
+              style={inputStyle}
             />
           </div>
           <div>
             <Label htmlFor="password">Password *</Label>
-            <Input
+            <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="password"
+              style={inputStyle}
             />
           </div>
           <div>
             <Label htmlFor="registrationCode">Registration Code *</Label>
-            <Input
+            <input
               id="registrationCode"
               type="password"
               value={registrationCode}
               onChange={(e) => setRegistrationCode(e.target.value)}
               placeholder="Code provided by the platform"
+              style={inputStyle}
             />
           </div>
         </div>
 
         {/* Address Section */}
         <div className="space-y-4 pt-4 border-t border-ui-border-base">
-          <Heading level="h3" className="text-sm font-medium text-ui-fg-subtle">
+          <Heading level="h3" className="text-sm font-medium" style={{ color: "#560B18" }}>
             Store Address
           </Heading>
           <div>
             <Label htmlFor="address1">Street Address *</Label>
-            <Input
+            <input
               id="address1"
               value={address1}
               onChange={(e) => setAddress1(e.target.value)}
               placeholder="123 Main Street"
+              style={inputStyle}
             />
           </div>
           <div>
             <Label htmlFor="address2">Address Line 2</Label>
-            <Input
+            <input
               id="address2"
               value={address2}
               onChange={(e) => setAddress2(e.target.value)}
               placeholder="Apt, Suite, Floor (optional)"
+              style={inputStyle}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="city">City *</Label>
-              <Input
+              <input
                 id="city"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 placeholder="Athens"
+                style={inputStyle}
               />
             </div>
             <div>
               <Label htmlFor="postalCode">Postal Code *</Label>
-              <Input
+              <input
                 id="postalCode"
                 value={postalCode}
                 onChange={(e) => setPostalCode(e.target.value)}
                 placeholder="10431"
+                style={inputStyle}
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="province">Province/State</Label>
-              <Input
+              <input
                 id="province"
                 value={province}
                 onChange={(e) => setProvince(e.target.value)}
                 placeholder="Attica (optional)"
+                style={inputStyle}
               />
             </div>
             <div>
               <Label htmlFor="countryCode">Country Code *</Label>
-              <Input
+              <input
                 id="countryCode"
                 value={countryCode}
                 onChange={(e) => setCountryCode(e.target.value.toLowerCase())}
                 placeholder="gr"
                 maxLength={2}
+                style={inputStyle}
               />
             </div>
           </div>
           <div>
             <Label htmlFor="phone">Business Phone</Label>
-            <Input
+            <input
               id="phone"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+30 210 1234567 (optional)"
+              style={inputStyle}
             />
           </div>
         </div>

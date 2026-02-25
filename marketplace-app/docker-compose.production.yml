@@ -27,6 +27,10 @@ services:
       - COOKIE_SECRET=${COOKIE_SECRET}
       - STORE_REGISTRATION_CODE=${STORE_REGISTRATION_CODE}
 
+      # Stripe payment provider
+      - STRIPE_API_KEY=${STRIPE_API_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+
       # Optional features
       - IS_CHANNEL_PRICING_ENABLED=${IS_CHANNEL_PRICING_ENABLED:-false}
       
