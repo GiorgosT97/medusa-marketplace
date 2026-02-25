@@ -31,6 +31,13 @@ export async function POST(
     const registerResponse = await authService.register("emailpass", {
       body: { email, password },
     } as AuthenticationInput)
+
+    if (!registerResponse.success || !registerResponse.authIdentity) {
+      return res.status(422).json({
+        message: registerResponse.error || "Σφάλμα κατά τη δημιουργία λογαριασμού.",
+      }) as any
+    }
+
     authIdentityId = registerResponse.authIdentity.id
   } catch (error) {
     console.error("/stores/regular auth register error", error)
