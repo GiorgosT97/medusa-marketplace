@@ -22,8 +22,8 @@ ARG VITE_BACKEND_URL
 ENV MEDUSA_BACKEND_URL=${MEDUSA_BACKEND_URL}
 ENV VITE_BACKEND_URL=${VITE_BACKEND_URL}
 
-# Build -> creates .medusa/server
-RUN medusa build
+# Build -> runs prebuild (patch-admin.ts) then medusa build -> creates .medusa/server
+RUN npm run build
 
 # Symlink .medusa/server/node_modules -> /app/node_modules instead of running a
 # separate "npm install --omit=dev" inside .medusa/server.

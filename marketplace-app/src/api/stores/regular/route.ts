@@ -1,6 +1,7 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework";
 import { Modules } from "@medusajs/framework/utils";
 import { IAuthModuleService, AuthenticationInput } from "@medusajs/framework/types";
+import jwt from "jsonwebtoken";
 
 import {
   CreateStoreInput,
@@ -57,13 +58,21 @@ export async function POST(
       },
     })
 
-    // Authenticate to get a token for auto-login
+    // Generate JWT token for auto-login to the admin panel
     let token: string | undefined
     try {
-      const authResult = await authService.authenticate("emailpass", {
-        body: { email, password },
-      } as AuthenticationInput)
-      token = (authResult as any).token
+      const jwtSecret = process.env.JWT_SECRET
+      if (jwtSecret && result.user?.id) {
+        token = jwt.sign(
+          {
+            actor_id: result.user.id,
+            actor_type: "user",
+            auth_identity_id: authIdentityId,
+          },
+          jwtSecret,
+          { expiresIn: "24h" }
+        )
+      }
     } catch {
       // Non-fatal: store creation succeeded, auto-login just won't work
     }
