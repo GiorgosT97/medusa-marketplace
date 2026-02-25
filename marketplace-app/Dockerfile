@@ -25,20 +25,26 @@ ENV VITE_BACKEND_URL=${VITE_BACKEND_URL}
 # Build -> creates .medusa/server
 RUN medusa build
 
-# Remove dev dependencies to slim the image.
-# IMPORTANT: Do NOT run "npm install" inside .medusa/server/ — that would create
-# a second node_modules tree which causes two separate awilix/workflows-sdk
-# instances and breaks ALL custom workflows with:
-#   "parentContainer[ROLL_UP_REGISTRATIONS] is not a function"
-# Running from /app/ with a single /app/node_modules/ tree fixes this.
-RUN npm prune --omit=dev
+# Install production dependencies inside .medusa/server (the actual runtime dir)
+WORKDIR /app/.medusa/server
+RUN npm install --omit=dev
+
+# CRITICAL: Remove /app/node_modules so only .medusa/server/node_modules exists.
+# Having both causes two separate Awilix instances with different ROLL_UP_REGISTRATIONS
+# Symbols, breaking ALL custom workflows with the "is not a function" error.
+RUN rm -rf /app/node_modules
 
 # Create static directory for file uploads
 RUN mkdir -p /app/.medusa/server/static
 
-# Create entrypoint script (runs from /app/ — single node_modules context)
+# Create entrypoint script
 RUN echo '#!/bin/sh' > /entrypoint.sh && \
     echo 'set -e' >> /entrypoint.sh && \
+    echo '' >> /entrypoint.sh && \
+    echo '# Copy .env if needed' >> /entrypoint.sh && \
+    echo 'if [ ! -f .env.production ] && [ -f /app/.env ]; then' >> /entrypoint.sh && \
+    echo '  cp /app/.env .env.production' >> /entrypoint.sh && \
+    echo 'fi' >> /entrypoint.sh && \
     echo '' >> /entrypoint.sh && \
     echo 'export NODE_ENV=production' >> /entrypoint.sh && \
     echo '' >> /entrypoint.sh && \
