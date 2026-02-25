@@ -25,14 +25,15 @@ ENV VITE_BACKEND_URL=${VITE_BACKEND_URL}
 # Build -> creates .medusa/server
 RUN medusa build
 
-# Install production dependencies inside .medusa/server (the actual runtime dir)
+# Symlink .medusa/server/node_modules -> /app/node_modules instead of running a
+# separate "npm install --omit=dev" inside .medusa/server.
+#
+# Why: two separate node_modules trees cause two Awilix instances with different
+# ROLL_UP_REGISTRATIONS Symbols, breaking ALL custom workflows at runtime.
+# A symlink ensures every require() from .medusa/server/src resolves to the same
+# /app/node_modules as the rest of the app — one tree, one Symbol, no conflict.
 WORKDIR /app/.medusa/server
-RUN npm install --omit=dev
-
-# CRITICAL: Remove /app/node_modules so only .medusa/server/node_modules exists.
-# Having both causes two separate Awilix instances with different ROLL_UP_REGISTRATIONS
-# Symbols, breaking ALL custom workflows with the "is not a function" error.
-RUN rm -rf /app/node_modules
+RUN ln -s /app/node_modules node_modules
 
 # Create static directory for file uploads
 RUN mkdir -p /app/.medusa/server/static
