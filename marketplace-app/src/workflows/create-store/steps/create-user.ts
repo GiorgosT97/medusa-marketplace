@@ -7,6 +7,10 @@ import {
   AuthenticationInput,
 } from "@medusajs/framework/types";
 
+export type CreateUserStepInput = Required<
+  Omit<CreateStoreInput, "user_id" | "store_name" | "metadata" | "address">
+>;
+
 export type CreateUserStepCompensationInput = {
   userId?: string;
   authIdentityId?: string;
@@ -15,9 +19,7 @@ export type CreateUserStepCompensationInput = {
 export const createUserStep = createStep(
   "create-user-step",
   async (
-    input: Required<
-      Omit<CreateStoreInput, "user_id" | "store_name" | "metadata" | "address">
-    >,
+    input: CreateUserStepInput,
     { container }
   ) => {
     const userService: IUserModuleService = container.resolve(Modules.USER);
@@ -27,38 +29,37 @@ export const createUserStep = createStep(
     try {
       // 1. create user
       const user = await userService.createUsers({
-        ...input,
+        email: input.email,
         metadata: input.is_super_admin ? { is_super_admin: true } : undefined,
       });
       compensationInput.userId = user.id;
 
-      // 2. create auth identity
-      const registerResponse = await authService.register("emailpass", {
-        body: {
-          email: input.email,
-          password: input.password,
-        },
-      } as AuthenticationInput);
-      compensationInput.authIdentityId = registerResponse.authIdentity.id;
+      let authIdentityId = input.authIdentityId
 
-      // 3. attach auth identity to user
+      if (!authIdentityId) {
+        // 2a. create auth identity (fallback: register inside step)
+        // NOTE: this path should not be hit in production — prefer passing
+        // authIdentityId from the route handler to avoid container scope issues.
+        const registerResponse = await authService.register("emailpass", {
+          body: {
+            email: input.email,
+            password: input.password,
+          },
+        } as AuthenticationInput);
+        authIdentityId = registerResponse.authIdentity.id;
+      }
+
+      compensationInput.authIdentityId = authIdentityId;
+
+      // 2b. attach auth identity to user
       await authService.updateAuthIdentities({
-        id: registerResponse.authIdentity.id,
+        id: authIdentityId,
         app_metadata: {
           user_id: user.id,
         },
       });
 
-      // 4. do we want to authenticate immediately?
-      //
-      // const authenticationResponse = await authService.authenticate("emailpass", {
-      //   body: {
-      //     email: input.email,
-      //     password: input.password,
-      //   },
-      // } as AuthenticationInput);
-
-      return new StepResponse({ user, registerResponse }, compensationInput);
+      return new StepResponse({ user, registerResponse: {} }, compensationInput);
     } catch (e) {
       return StepResponse.permanentFailure(
         `Couldn't create the user: ${e}`,

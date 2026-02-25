@@ -108,22 +108,33 @@ const REST_PASSWORD_PATHS = findFilesPathByNamePattern(
   ".mjs"
 );
 
-// 1a) Patch en.json — the real runtime translation source (idempotent)
+// 1a) Patch all locale JSON files — the real runtime translation source (idempotent)
 {
-  const enJsonPath = `${process.cwd()}/node_modules/@medusajs/dashboard/dist/en.json`;
-  if (fs.existsSync(enJsonPath)) {
-    const json = JSON.parse(fs.readFileSync(enJsonPath, "utf8"));
-    let changed = false;
-    if (json?.login?.title) { json.login.title = ""; changed = true; }
-    if (json?.login?.hint) { json.login.hint = ""; changed = true; }
-    if (changed) {
-      fs.writeFileSync(enJsonPath, JSON.stringify(json), "utf8");
-      console.log("Patched en.json login.title and login.hint.");
+  const distPath = `${process.cwd()}/node_modules/@medusajs/dashboard/dist`;
+  if (fs.existsSync(distPath)) {
+    const jsonFiles = (fs.readdirSync(distPath) as string[]).filter(
+      (f: string) => f.endsWith(".json")
+    );
+    for (const jsonFile of jsonFiles) {
+      const jsonPath = `${distPath}/${jsonFile}`;
+      try {
+        const json = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
+        let changed = false;
+        if (json?.login?.title) { json.login.title = ""; changed = true; }
+        if (json?.login?.hint) { json.login.hint = ""; changed = true; }
+        if (changed) {
+          fs.writeFileSync(jsonPath, JSON.stringify(json), "utf8");
+          console.log(`Patched ${jsonFile} login.title and login.hint.`);
+        }
+      } catch {
+        // skip non-JSON or malformed files
+      }
     }
   }
 }
 
 // 1b) Also patch chunk files for the bundled translations (idempotent)
+// Removes both English AND Greek welcome/sign-in text from all chunk files.
 let lines: string[];
 {
   const dirPath = `${process.cwd()}/node_modules/@medusajs/dashboard/dist`;
@@ -133,10 +144,18 @@ let lines: string[];
   for (const fileName of allChunkFiles) {
     const chunkPath = `${dirPath}/${fileName}`;
     const content: string = fs.readFileSync(chunkPath, "utf8");
-    if (content.includes("Welcome to") || content.includes("Sign in to access the account area")) {
+    const hasTarget = (
+      content.includes("Welcome to") ||
+      content.includes("Sign in to access the account area") ||
+      content.includes("Καλώς ήρθατε") ||
+      content.includes("Συνδεθείτε για να αποκτήσετε")
+    );
+    if (hasTarget) {
       const updated = content
         .replace(/Welcome to (Medusa|Vintage Vault|Marketplace)/g, "")
-        .replace(/Sign in to access the account area/g, "");
+        .replace(/Sign in to access the account area/g, "")
+        .replace(/Καλώς ήρθατε στην? \w*/g, "")
+        .replace(/Συνδεθείτε για να αποκτήσετε[^"']*/g, "");
       if (updated !== content) {
         fs.writeFileSync(chunkPath, updated, "utf8");
         console.log(`Removed welcome text in ${chunkPath}`);

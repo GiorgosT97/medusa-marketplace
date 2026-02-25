@@ -34,6 +34,7 @@ export type CreateStoreInput = {
   is_super_admin?: boolean;
   metadata?: Record<string, any>;
   address?: StoreAddressInput;
+  authIdentityId?: string;
 };
 
 export const createStoreWorkflow = createWorkflow(
