@@ -2,9 +2,6 @@ version: '3.8'
 
 services:
   medusa:
-    # build:
-    #   context: ./marketplace-app
-    #   dockerfile: Dockerfile
     image: bitleaf/thrift-backend:latest
     container_name: marketplace-medusa
     depends_on:
@@ -28,6 +25,9 @@ services:
       - medusa-static:/app/.medusa/server/static
       # Environment file
       - ./marketplace-app/.env.docker:/app/.medusa/server/.env.production:ro
+      # Admin branding patch — runs on every container start
+      - ./marketplace-app/patch-admin-startup.js:/app/patch-admin-startup.js:ro
+    entrypoint: ["/bin/sh", "-c", "node /app/patch-admin-startup.js && /entrypoint.sh"]
     networks:
       - internal
     restart: unless-stopped

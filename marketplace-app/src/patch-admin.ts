@@ -133,8 +133,8 @@ const REST_PASSWORD_PATHS = findFilesPathByNamePattern(
   }
 }
 
-// 1b) Also patch chunk files for the bundled translations (idempotent)
-// Removes both English AND Greek welcome/sign-in text from all chunk files.
+// 1b) Patch chunk files: clear login title/hint for ALL locales (idempotent)
+// The bundled chunk contains ~29 locales, each with a login: { title, hint } block.
 let lines: string[];
 {
   const dirPath = `${process.cwd()}/node_modules/@medusajs/dashboard/dist`;
@@ -143,23 +143,23 @@ let lines: string[];
   );
   for (const fileName of allChunkFiles) {
     const chunkPath = `${dirPath}/${fileName}`;
-    const content: string = fs.readFileSync(chunkPath, "utf8");
-    const hasTarget = (
-      content.includes("Welcome to") ||
-      content.includes("Sign in to access the account area") ||
-      content.includes("Καλώς ήρθατε") ||
-      content.includes("Συνδεθείτε για να αποκτήσετε")
+    let content: string = fs.readFileSync(chunkPath, "utf8");
+    if (!content.includes("login:")) continue;
+
+    const before = content;
+    // Clear all login title values across every locale
+    content = content.replace(
+      /(login:\s*\{[^}]*?title:\s*)"([^"]+)"/g,
+      '$1""'
     );
-    if (hasTarget) {
-      const updated = content
-        .replace(/Welcome to (Medusa|Vintage Vault|Marketplace)/g, "")
-        .replace(/Sign in to access the account area/g, "")
-        .replace(/Καλώς ήρθατε στην? \w*/g, "")
-        .replace(/Συνδεθείτε για να αποκτήσετε[^"']*/g, "");
-      if (updated !== content) {
-        fs.writeFileSync(chunkPath, updated, "utf8");
-        console.log(`Removed welcome text in ${chunkPath}`);
-      }
+    // Clear all login hint values across every locale
+    content = content.replace(
+      /(login:\s*\{[^}]*?hint:\s*)"([^"]+)"/g,
+      '$1""'
+    );
+    if (content !== before) {
+      fs.writeFileSync(chunkPath, content, "utf8");
+      console.log(`Cleared login title/hint in all locales: ${chunkPath}`);
     }
   }
 }

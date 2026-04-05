@@ -38,6 +38,9 @@ RUN ln -s /app/node_modules node_modules
 # Create static directory for file uploads
 RUN mkdir -p /app/.medusa/server/static
 
+# Copy admin startup patch (runs on every container start for URL replacement)
+COPY patch-admin-startup.js /app/patch-admin-startup.js
+
 # Create entrypoint script
 RUN echo '#!/bin/sh' > /entrypoint.sh && \
     echo 'set -e' >> /entrypoint.sh && \
@@ -61,6 +64,9 @@ RUN echo '#!/bin/sh' > /entrypoint.sh && \
     echo '# Ensure static directory exists and has correct permissions' >> /entrypoint.sh && \
     echo 'mkdir -p /app/.medusa/server/static' >> /entrypoint.sh && \
     echo 'chmod 755 /app/.medusa/server/static' >> /entrypoint.sh && \
+    echo '' >> /entrypoint.sh && \
+    echo '# Run admin branding patch (replaces baked-in URLs with current MEDUSA_BACKEND_URL)' >> /entrypoint.sh && \
+    echo 'node /app/patch-admin-startup.js' >> /entrypoint.sh && \
     echo '' >> /entrypoint.sh && \
     echo '# Run migrations before starting' >> /entrypoint.sh && \
     echo 'echo "Running database migrations..."' >> /entrypoint.sh && \

@@ -29,7 +29,7 @@
   ],
   "scripts": {
     "prebuild": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/patch-admin.ts",
-    "build": "medusa build",
+    "build": "medusa build && ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/patch-admin-postbuild.ts",
     "predev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/patch-admin.ts",
     "dev": "medusa develop",
     "migrate": "medusa db:migrate",
